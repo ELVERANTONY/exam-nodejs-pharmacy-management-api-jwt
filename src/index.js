@@ -9,7 +9,13 @@ async function startServer() {
     // Sincronizar modelos con la base de datos
     // force: false para no borrar datos existentes, true para recrear tablas
     await sequelize.sync({ alter: true });
-    console.log('Conexión a la base de datos establecida y modelos sincronizados.');
+    
+    // Auto-seed para la nube
+    const { TipoMedicamento, Especialidad } = require('./models');
+    await TipoMedicamento.findOrCreate({ where: { CodTipoMed: 1 }, defaults: { nombreTipo: 'Genéricos' } });
+    await Especialidad.findOrCreate({ where: { CodEspec: 1 }, defaults: { nombreEspec: 'Medicina General' } });
+    
+    console.log('Conexión a la base de datos establecida y datos maestros verificados.');
 
     app.listen(PORT, () => {
       console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
